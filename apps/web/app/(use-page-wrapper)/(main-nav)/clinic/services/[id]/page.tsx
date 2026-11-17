@@ -4,14 +4,17 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { canManageCatalog } from "@calcom/clinic/src/auth/clinicRole";
+import { listLocations } from "@calcom/clinic/src/locations/locationRepository";
+import { listAssignments, listPractitioners } from "@calcom/clinic/src/services/assignmentRepository";
 import { getService } from "@calcom/clinic/src/services/serviceRepository";
 
 import { requireClinicRole } from "~/clinic/requireClinicRole";
 import { clinicButtonClass, clinicSecondaryButtonClass } from "~/clinic/formStyles";
+import { AssignmentsSection } from "~/clinic/services/AssignmentsSection";
 import { ServiceFields } from "~/clinic/services/ServiceFields";
 
 import { ShellMainAppDir } from "../../../ShellMainAppDir";
-import { updateServiceAction } from "../actions";
+import { assignPractitionerAction, unassignPractitionerAction, updateServiceAction } from "../actions";
 
 export const generateMetadata = async () =>
   await _generateMetadata(
@@ -33,6 +36,11 @@ const Page = async ({ params: _params, searchParams: _searchParams }: PageProps)
   const service = await getService(id);
   if (!service) notFound();
 
+  const [assignments, practitioners, locations] = await Promise.all([
+    listAssignments(service.id),
+    listPractitioners(),
+    listLocations(),
+  ]);
   const error = typeof searchParams?.error === "string" ? searchParams.error : null;
 
   return (
@@ -54,6 +62,15 @@ const Page = async ({ params: _params, searchParams: _searchParams }: PageProps)
           </Link>
         </div>
       </form>
+      <AssignmentsSection
+        t={t}
+        serviceId={service.id}
+        assignments={assignments}
+        practitioners={practitioners}
+        locations={locations}
+        assignAction={assignPractitionerAction}
+        unassignAction={unassignPractitionerAction}
+      />
     </ShellMainAppDir>
   );
 };

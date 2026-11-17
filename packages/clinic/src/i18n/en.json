@@ -37,5 +37,14 @@
   "clinic_phone": "Phone",
   "clinic_add_location": "Add location",
   "clinic_edit_location": "Edit location",
-  "clinic_no_locations": "No locations yet. Add your first one below."
+  "clinic_no_locations": "No locations yet. Add your first one below.",
+  "clinic_assignments_help": "Each practitioner gets their own bookable appointment type for this service.",
+  "clinic_no_assignments": "No practitioners offer this service yet.",
+  "clinic_unknown_user": "Unknown user",
+  "clinic_any_location": "No fixed location",
+  "clinic_not_synced": "not synced",
+  "clinic_remove": "Remove",
+  "clinic_choose": "Choose...",
+  "clinic_location": "Location",
+  "clinic_assign": "Assign"
 }
