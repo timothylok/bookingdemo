@@ -71,6 +71,22 @@ export const prismaBookingEventDeps: BookingEventDeps = {
     });
   },
 
+  async markBookingRescheduled(bookingId) {
+    await prisma.clinicPatientBooking.updateMany({ where: { bookingId }, data: { status: "RESCHEDULED" } });
+  },
+
+  async moveIntakeForm({ fromBookingId, toBookingId, expiresAt }) {
+    // Never overwrite a form the new booking already has (e.g. a redelivered reschedule webhook).
+    if (await prisma.clinicPatientForm.findUnique({ where: { bookingId: toBookingId }, select: { id: true } })) {
+      return true;
+    }
+    const result = await prisma.clinicPatientForm.updateMany({
+      where: { bookingId: fromBookingId },
+      data: { bookingId: toBookingId, expiresAt },
+    });
+    return result.count > 0;
+  },
+
   async sendIntakeEmail({ to, patientName, token, startTime }) {
     const link = `${WEBAPP_URL}/intake/${token}`;
     const email = buildIntakeEmail({

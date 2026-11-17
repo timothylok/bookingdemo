@@ -1,4 +1,4 @@
-import { createIntakeToken } from "../forms/intakeToken";
+import { createIntakeToken, intakeExpiry } from "../forms/intakeToken";
 import { planReminder } from "../reminders/reminders";
 import type { BookingEvent } from "./parseBookingEvent";
 
@@ -22,6 +22,9 @@ export type BookingEventDeps = {
   sendIntakeEmail(input: { to: string; patientName: string; token: string; startTime: Date }): Promise<void>;
   scheduleReminder(input: { bookingId: number; kind: string; sendAt: Date }): Promise<void>;
   cancelReminders(bookingId: number): Promise<void>;
+  markBookingRescheduled(bookingId: number): Promise<void>;
+  /** Re-points the original booking's intake form at the new booking; false if there was none. */
+  moveIntakeForm(input: { fromBookingId: number; toBookingId: number; expiresAt: Date }): Promise<boolean>;
 };
 
 export type HandleResult = { patientId: number; intakeFormCreated: boolean };
@@ -52,7 +55,20 @@ export async function handleBookingEvent(
     await deps.cancelReminders(event.bookingId);
   }
 
-  if (event.trigger !== "BOOKING_CREATED" || (await deps.hasIntakeForm(event.bookingId))) {
+  if (event.trigger === "BOOKING_RESCHEDULED" && event.previousBookingId !== null) {
+    // The original booking was cancelled by upstream without its own cancellation webhook.
+    await deps.markBookingRescheduled(event.previousBookingId);
+    await deps.cancelReminders(event.previousBookingId);
+    const moved = await deps.moveIntakeForm({
+      fromBookingId: event.previousBookingId,
+      toBookingId: event.bookingId,
+      expiresAt: intakeExpiry(event.endTime),
+    });
+    if (moved) return { patientId: patient.id, intakeFormCreated: false };
+  }
+
+  const needsForm = event.trigger === "BOOKING_CREATED" || event.trigger === "BOOKING_RESCHEDULED";
+  if (!needsForm || (await deps.hasIntakeForm(event.bookingId))) {
     return { patientId: patient.id, intakeFormCreated: false };
   }
 

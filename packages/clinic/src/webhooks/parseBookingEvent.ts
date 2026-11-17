@@ -24,6 +24,8 @@ const webhookSchema = z.object({
     status: z.string().optional(),
     attendees: z.array(attendeeSchema).min(1),
     responses: z.record(z.unknown()).optional(),
+    // On BOOKING_RESCHEDULED upstream cancels the original booking and sends its id here.
+    rescheduleId: z.number().int().nullish(),
   }),
 });
 
@@ -34,6 +36,7 @@ export type BookingEvent = {
   startTime: Date;
   endTime: Date;
   status: string;
+  previousBookingId: number | null;
   patient: { name: string; email: string; phone: string | null };
 };
 
@@ -82,6 +85,7 @@ export function parseBookingEvent(body: unknown): ParseOutcome {
       startTime,
       endTime,
       status: STATUS_BY_TRIGGER[trigger],
+      previousBookingId: trigger === "BOOKING_RESCHEDULED" ? (payload.rescheduleId ?? null) : null,
       patient: {
         name: attendee.name.trim() || attendee.email,
         email: attendee.email.trim().toLowerCase(),

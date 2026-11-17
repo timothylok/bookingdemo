@@ -92,5 +92,6 @@
   "clinic_patients_latest": "latest",
   "clinic_patients_history": "Appointments",
   "clinic_patients_answers_restricted": "Questionnaire answers are only visible to the treating practitioner and clinic admins.",
-  "clinic_unknown_booking": "Booking no longer available"
+  "clinic_unknown_booking": "Booking no longer available",
+  "clinic_status_rescheduled": "Rescheduled"
 }

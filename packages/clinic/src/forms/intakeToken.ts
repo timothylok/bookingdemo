@@ -8,13 +8,13 @@ export function hashIntakeToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
 
+export function intakeExpiry(endTime: Date): Date {
+  return new Date(endTime.getTime() + VALID_AFTER_APPOINTMENT_MS);
+}
+
 export function createIntakeToken(endTime: Date, random: (size: number) => Buffer = randomBytes) {
   const token = random(TOKEN_BYTES).toString("base64url");
-  return {
-    token,
-    tokenHash: hashIntakeToken(token),
-    expiresAt: new Date(endTime.getTime() + VALID_AFTER_APPOINTMENT_MS),
-  };
+  return { token, tokenHash: hashIntakeToken(token), expiresAt: intakeExpiry(endTime) };
 }
 
 export function isIntakeTokenUsable(form: { expiresAt: Date; submittedAt: Date | null }, now: Date): boolean {

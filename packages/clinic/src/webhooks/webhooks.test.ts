@@ -50,6 +50,7 @@ describe("parseBookingEvent", () => {
         startTime: new Date("2026-11-20T01:00:00Z"),
         endTime: new Date("2026-11-20T02:00:00Z"),
         status: "ACCEPTED",
+        previousBookingId: null,
         patient: { name: "Jane Patient", email: "jane@example.com", phone: "+6421999999" },
       },
     });
@@ -103,6 +104,8 @@ describe("handleBookingEvent", () => {
     sendIntakeEmail: vi.fn().mockResolvedValue(undefined),
     scheduleReminder: vi.fn().mockResolvedValue(undefined),
     cancelReminders: vi.fn().mockResolvedValue(undefined),
+    markBookingRescheduled: vi.fn().mockResolvedValue(undefined),
+    moveIntakeForm: vi.fn().mockResolvedValue(true),
     ...overrides,
   });
 
@@ -141,6 +144,41 @@ describe("handleBookingEvent", () => {
       kind: "email_24h",
       sendAt: new Date("2026-11-19T01:00:00Z"),
     });
+  });
+
+  const rescheduled = (): BookingEvent => {
+    const outcome = parseBookingEvent(payload("BOOKING_RESCHEDULED", { bookingId: 43, rescheduleId: 42 }));
+    if (outcome.kind !== "event") throw new Error("fixture should parse");
+    return outcome.event;
+  };
+
+  it("parses the original booking id only for reschedules", () => {
+    expect(rescheduled().previousBookingId).toBe(42);
+    const created = parseBookingEvent(payload("BOOKING_CREATED", { rescheduleId: 42 }));
+    expect(created.kind === "event" && created.event.previousBookingId).toBeNull();
+  });
+
+  it("on reschedule retires the original booking and moves its intake form", async () => {
+    const deps = makeDeps();
+    const result = await handleBookingEvent(rescheduled(), deps, new Date("2026-11-17T10:00:00Z"));
+
+    expect(deps.markBookingRescheduled).toHaveBeenCalledWith(42);
+    expect(deps.cancelReminders).toHaveBeenCalledWith(42);
+    expect(deps.moveIntakeForm).toHaveBeenCalledWith({
+      fromBookingId: 42,
+      toBookingId: 43,
+      expiresAt: new Date("2026-11-21T02:00:00Z"),
+    });
+    expect(deps.scheduleReminder).toHaveBeenCalledWith(expect.objectContaining({ bookingId: 43 }));
+    expect(result.intakeFormCreated).toBe(false);
+    expect(deps.sendIntakeEmail).not.toHaveBeenCalled();
+  });
+
+  it("creates a fresh intake form on reschedule when the original had none", async () => {
+    const deps = makeDeps({ moveIntakeForm: vi.fn().mockResolvedValue(false) });
+    const result = await handleBookingEvent(rescheduled(), deps);
+    expect(result.intakeFormCreated).toBe(true);
+    expect(deps.createIntakeForm).toHaveBeenCalledWith(expect.objectContaining({ bookingId: 43 }));
   });
 
   it("only updates the booking status and cancels reminders on cancellation", async () => {
