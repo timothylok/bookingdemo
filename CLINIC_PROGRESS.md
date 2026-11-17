@@ -14,9 +14,10 @@ Updated each loop iteration. Plan: `C:\Users\timlo\.claude\plans\pure-zooming-mu
 - Item 3 DONE: public /book (no login) -> offer cards -> existing Booker; clinic EventTypes require visible patient phone (merged into bookingFields); browser-verified booking form shows Name*, Email*, Phone*
 - Item 4 (part): ClinicPatient/ClinicPatientBooking/ClinicFormTemplate/ClinicPatientForm models (migration 20261117010000_clinic_patients_forms, seeds default health questionnaire); POST /api/clinic/webhooks/cal verifies X-Cal-Signature-256, upserts patient + booking, creates one hashed-token intake form per booking (curl-verified: 401 bad sig, 200 create, idempotent redelivery) (22609cb)
 - Item 4 DONE: /intake/[token] questionnaire (noindex, template-driven, single-use conditional submit, browser-verified, answers stored) (4d4070c); per-practitioner Cal.com webhook auto-registered on assignment (integration-tested)
+- Item 5 (part): /clinic/reception (admin + reception roles) - summary cards, day/week views, staff filter, intake status, no-show toggle; browser-verified with seeded bookings (5339e6b)
 
 ## In progress
-- Item 5: /clinic/reception dashboard
+- Item 5: /clinic/patients page
 
 ## Blocked / needs your decision
 - Real email transport for intake/reminder emails (SMTP or provider). Currently CLINIC_EMAIL_TRANSPORT=log only writes the link to the server log.
