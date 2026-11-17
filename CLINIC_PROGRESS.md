@@ -15,17 +15,17 @@ Updated each loop iteration. Plan: `C:\Users\timlo\.claude\plans\pure-zooming-mu
 - Item 4 (part): ClinicPatient/ClinicPatientBooking/ClinicFormTemplate/ClinicPatientForm models (migration 20261117010000_clinic_patients_forms, seeds default health questionnaire); POST /api/clinic/webhooks/cal verifies X-Cal-Signature-256, upserts patient + booking, creates one hashed-token intake form per booking (curl-verified: 401 bad sig, 200 create, idempotent redelivery) (22609cb)
 - Item 4 DONE: /intake/[token] questionnaire (noindex, template-driven, single-use conditional submit, browser-verified, answers stored) (4d4070c); per-practitioner Cal.com webhook auto-registered on assignment (integration-tested)
 - Item 5 (part): /clinic/reception (admin + reception roles) - summary cards, day/week views, staff filter, intake status, no-show toggle; browser-verified with seeded bookings (5339e6b)
+- Item 5 DONE: /clinic/patients search + detail; intake answers visible only to admin or the treating practitioner (browser-verified as admin and as reception)
 
 ## In progress
-- Item 5: /clinic/patients page
+- Item 6: ClinicReminder model + scheduling from webhook events + cron route
 
 ## Blocked / needs your decision
 - Real email transport for intake/reminder emails (SMTP or provider). Currently CLINIC_EMAIL_TRANSPORT=log only writes the link to the server log.
 - Replace Cal.com logos/images in `apps/web/public` with clinic branding (needs your artwork)
 
 ## Next
-- Item 5: reception dashboard (today/tomorrow/cancelled/no-shows/intake status; day/week/staff views) + /clinic/patients
-- Item 6: reminders + cron + security pass
+- Item 6: reminders (24h email via log transport) + cron route (protected by CRON secret), cancel on cancellation; then security pass across all clinic routes
 
 ## Notes
 - Unverified: actual Cal.com -> clinic webhook delivery for a real booking (making a real booking would send emails). Route verified with signed curl requests; SSRF checks only apply to tRPC webhook create/edit, and self-hosted allows private IPs.
