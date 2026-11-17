@@ -1,5 +1,6 @@
 import { prisma } from "@calcom/prisma";
 
+import { withRequiredPhone } from "./bookingFields";
 import type { EventTypeData } from "./eventTypeMapping";
 import { uniqueSlug } from "./eventTypeMapping";
 import type { SyncDeps } from "./syncAssignment";
@@ -40,6 +41,7 @@ export const prismaSyncDeps: SyncDeps = {
         ...data,
         slug,
         userId,
+        bookingFields: withRequiredPhone([]),
         users: { connect: { id: userId } },
       },
       select: { id: true },
@@ -47,10 +49,20 @@ export const prismaSyncDeps: SyncDeps = {
   },
 
   async updateEventType(eventTypeId, data: EventTypeData) {
+    const current = await prisma.eventType.findUnique({
+      where: { id: eventTypeId },
+      select: { bookingFields: true },
+    });
+    if (!current) return false;
+
     // Slug is left alone so a renamed service does not break the practitioner's public booking link.
     const { slug: _keepExistingSlug, ...rest } = data;
-    const result = await prisma.eventType.updateMany({ where: { id: eventTypeId }, data: rest });
-    return result.count > 0;
+    await prisma.eventType.update({
+      where: { id: eventTypeId },
+      data: { ...rest, bookingFields: withRequiredPhone(current.bookingFields) },
+      select: { id: true },
+    });
+    return true;
   },
 
   async linkAssignment(assignmentId, eventTypeId) {

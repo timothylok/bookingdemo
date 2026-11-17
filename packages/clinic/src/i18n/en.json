@@ -46,5 +46,14 @@
   "clinic_remove": "Remove",
   "clinic_choose": "Choose...",
   "clinic_location": "Location",
-  "clinic_assign": "Assign"
+  "clinic_assign": "Assign",
+  "clinic_book_title": "Book an appointment",
+  "clinic_book_subtitle": "Choose a practitioner and service, then pick a time that suits you.",
+  "clinic_book_none": "Online booking is not available yet. Please contact the clinic.",
+  "clinic_book_choose_practitioner": "Practitioner",
+  "clinic_book_choose_service": "Service",
+  "clinic_book_choose_time": "Available appointments",
+  "clinic_book_any": "Any",
+  "clinic_book_no_match": "No appointments match that combination. Try another practitioner or service.",
+  "clinic_book_select": "Choose time"
 }

@@ -64,6 +64,14 @@ describe("syncAssignment with the Prisma adapter", () => {
     });
     expect(eventType.locations).toEqual([{ type: "inPerson", address: "1 Test St", displayLocationPublicly: true }]);
 
+    const fields = await prisma.eventType.findUniqueOrThrow({
+      where: { id: result.eventTypeId },
+      select: { bookingFields: true },
+    });
+    expect(fields.bookingFields).toEqual([
+      expect.objectContaining({ name: "attendeePhoneNumber", required: true, hidden: false }),
+    ]);
+
     const link = await prisma.clinicServiceAssignment.findUniqueOrThrow({
       where: { id: assignmentId },
       select: { eventTypeId: true },
