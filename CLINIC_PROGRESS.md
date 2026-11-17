@@ -22,7 +22,7 @@ Plan: `C:\Users\timlo\.claude\plans\pure-zooming-muffin.md`. Last updated 17 Nov
 ## NOT verified / needs you before going live
 - **`next build` was never run** (CLAUDE.md says to ask first). A working dev server does not prove the production build passes. Run it before deploying.
 - **Resend email transport is implemented but not tested against the live API.** Set `CLINIC_EMAIL_TRANSPORT=resend`, `RESEND_API_KEY` and `CLINIC_EMAIL_FROM` (domain verified in Resend). Unit-tested with a mocked `fetch`; default stays `log`, so nothing is sent until you opt in. Reminders previously built the email but only logged; they now send the built email.
-- **Vercel Cron entry** for `/api/clinic/cron/reminders` must be added to `apps/web/vercel.json` (upstream file) and `CRON_SECRET` set in Vercel.
+- **Reminder cron runs on Cloudflare, not Vercel.** `packages/clinic/cloudflare-cron/` is a Worker (Cron Trigger every 5 min) that calls `/api/clinic/cron/reminders` with the Bearer secret. Not deployed or tested against Cloudflare; see its README. Set the same `CRON_SECRET` on the app and the Worker. No `vercel.json` change needed.
 - **Cal.com logos/images** in `apps/web/public` and the Booker footer logo are still Cal.com's (trademark; needs your artwork).
 - **Hosting region** for health data (NZ HIPC) is still undecided; `.env` here is local-only.
 - **AGPL:** the fork must stay AGPL if hosted for clinics; `/ee` is not enabled.

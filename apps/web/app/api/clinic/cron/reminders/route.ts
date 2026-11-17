@@ -7,7 +7,8 @@ import { isClinicMode } from "@calcom/clinic/src/config";
 import { prismaReminderDeps } from "@calcom/clinic/src/reminders/prismaReminderDeps";
 import { processDueReminders } from "@calcom/clinic/src/reminders/reminders";
 
-// Vercel Cron sends `Authorization: Bearer $CRON_SECRET`; any other scheduler can do the same.
+// Called by the Cloudflare Worker in packages/clinic/cloudflare-cron with `Authorization: Bearer $CRON_SECRET`;
+// any other scheduler can do the same.
 function isAuthorised(req: NextRequest): boolean {
   const secret = process.env.CRON_SECRET;
   const header = req.headers.get("authorization");

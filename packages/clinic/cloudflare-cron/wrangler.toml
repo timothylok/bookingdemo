@@ -1,0 +1,13 @@
+name = "clinic-reminder-cron"
+main = "worker.js"
+compatibility_date = "2026-11-01"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[vars]
+# Replace with the deployed app's public URL (no trailing path).
+APP_URL = "https://your-clinic-app.example"
+
+# CRON_SECRET is a secret, not a var. Set it with: npx wrangler secret put CRON_SECRET
+# It must equal the CRON_SECRET configured on the app.
