@@ -55,5 +55,13 @@
   "clinic_book_choose_time": "Available appointments",
   "clinic_book_any": "Any",
   "clinic_book_no_match": "No appointments match that combination. Try another practitioner or service.",
-  "clinic_book_select": "Choose time"
+  "clinic_book_select": "Choose time",
+  "clinic_intake_intro": "Hi {{name}}, please answer a few questions before your appointment.",
+  "clinic_intake_error": "Please answer the required questions (marked *) and keep each answer under 4000 characters.",
+  "clinic_intake_privacy": "Your answers are only shared with the clinic team involved in your care.",
+  "clinic_intake_submit": "Submit questionnaire",
+  "clinic_intake_thanks_title": "Thank you",
+  "clinic_intake_thanks_body": "Your questionnaire has been sent to the clinic. You can close this page.",
+  "clinic_intake_unavailable_title": "This link is no longer available",
+  "clinic_intake_unavailable_body": "The questionnaire link has expired or is not valid. Please contact the clinic if you still need to share information before your appointment."
 }
