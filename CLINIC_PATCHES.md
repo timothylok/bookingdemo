@@ -31,7 +31,7 @@ Rules:
 | `apps/web/next.config.ts` | `return redirects` -> `return [...getClinicRedirects(isClinicMode()), ...redirects]` (+2 relative imports) | redirect /teams /workflows /routing /insights to /event-types |
 | `apps/web/components/phone-input/PhoneInput.tsx` | 3 `"us"` fallbacks -> `getFallbackPhoneCountry()` (+1 import) | patients get +64 (NZ) by default when no geo/browser hint exists; override with `NEXT_PUBLIC_CLINIC_PHONE_COUNTRY` |
 | `packages/prisma/schema.prisma` | **append-only** `Clinic*` block at the end of the file (enums + 10 models, no relations to upstream models) | clinic data. Most likely merge conflict: upstream also appends here. Resolve by keeping both blocks; clinic migrations are all `*_clinic_*` |
-| `turbo.json` | `globalEnv += NEXT_PUBLIC_CLINIC_MODE, CLINIC_WEBHOOK_SECRET, CLINIC_EMAIL_TRANSPORT, CLINIC_TIME_ZONE` | turbo strict env passthrough |
+| `turbo.json` | `globalEnv += NEXT_PUBLIC_CLINIC_MODE, CLINIC_WEBHOOK_SECRET, CLINIC_EMAIL_TRANSPORT, CLINIC_EMAIL_FROM, CLINIC_TIME_ZONE` | turbo strict env passthrough |
 
 ## Clinic-owned files (no conflict risk)
 

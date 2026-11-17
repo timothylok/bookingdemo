@@ -1,4 +1,7 @@
-export type IntakeEmail = { to: string; subject: string; text: string };
+import type { ClinicEmail } from "../email/sendClinicEmail";
+import { sendClinicEmail } from "../email/sendClinicEmail";
+
+export type IntakeEmail = ClinicEmail;
 
 export function buildIntakeEmail(input: {
   to: string;
@@ -38,16 +41,9 @@ export function redactIntakeLink(link: string, nodeEnv: string | undefined = pro
   return link.replace(/\/intake\/[^/?#]+/, "/intake/[redacted]");
 }
 
-/**
- * Transport is chosen by CLINIC_EMAIL_TRANSPORT. Only "log" exists so far: it records that an email
- * would be sent (link only, never the patient's name or answers). A real SMTP transport must be added
- * before going live.
- */
-export async function deliverIntakeEmail(email: IntakeEmail, link: string): Promise<void> {
-  const transport = process.env.CLINIC_EMAIL_TRANSPORT ?? "log";
-  if (transport === "log") {
-    console.info(`[clinic] intake email (not sent, log transport): ${redactIntakeLink(link)}`);
-    return;
-  }
-  throw new Error(`Unknown CLINIC_EMAIL_TRANSPORT "${transport}" for intake email`);
+export async function deliverIntakeEmail(email: IntakeEmail, link: string, bookingId: number): Promise<void> {
+  await sendClinicEmail(email, {
+    logLine: `intake ${redactIntakeLink(link)}`,
+    idempotencyKey: `clinic-intake-${bookingId}`,
+  });
 }

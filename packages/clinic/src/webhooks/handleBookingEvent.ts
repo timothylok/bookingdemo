@@ -19,7 +19,7 @@ export type BookingEventDeps = {
     tokenHash: string;
     expiresAt: Date;
   }): Promise<{ created: boolean }>;
-  sendIntakeEmail(input: { to: string; patientName: string; token: string; startTime: Date }): Promise<void>;
+  sendIntakeEmail(input: { bookingId: number; to: string; patientName: string; token: string; startTime: Date }): Promise<void>;
   scheduleReminder(input: { bookingId: number; kind: string; sendAt: Date }): Promise<void>;
   cancelReminders(bookingId: number): Promise<void>;
   markBookingRescheduled(bookingId: number): Promise<void>;
@@ -81,6 +81,7 @@ export async function handleBookingEvent(
   });
   if (created) {
     await deps.sendIntakeEmail({
+      bookingId: event.bookingId,
       to: event.patient.email,
       patientName: event.patient.name,
       token,

@@ -1,3 +1,6 @@
+import type { ClinicEmail } from "../email/sendClinicEmail";
+import { sendClinicEmail } from "../email/sendClinicEmail";
+
 export function buildReminderEmail(input: {
   to: string;
   patientName: string;
@@ -31,12 +34,10 @@ export function buildReminderEmail(input: {
   };
 }
 
-/** Same transport rules as the intake email: "log" records only the booking id, never patient data. */
-export async function deliverReminderEmail(bookingId: number): Promise<void> {
-  const transport = process.env.CLINIC_EMAIL_TRANSPORT ?? "log";
-  if (transport === "log") {
-    console.info(`[clinic] reminder email (not sent, log transport) for booking ${bookingId}`);
-    return;
-  }
-  throw new Error(`Unknown CLINIC_EMAIL_TRANSPORT "${transport}" for reminder email`);
+/** The log transport records only the booking id, never patient data. */
+export async function deliverReminderEmail(email: ClinicEmail, bookingId: number): Promise<void> {
+  await sendClinicEmail(email, {
+    logLine: `reminder for booking ${bookingId}`,
+    idempotencyKey: `clinic-reminder-${bookingId}`,
+  });
 }

@@ -41,7 +41,7 @@ export const prismaReminderDeps: ReminderDeps = {
     const attendee = booking.attendees[0];
     if (!attendee) return "skip";
 
-    buildReminderEmail({
+    const email = buildReminderEmail({
       to: attendee.email,
       patientName: attendee.name,
       title: booking.title,
@@ -51,7 +51,7 @@ export const prismaReminderDeps: ReminderDeps = {
       timeZone: TIME_ZONE,
       manageLink: `${WEBAPP_URL}/booking/${booking.uid}`,
     });
-    await deliverReminderEmail(reminder.bookingId);
+    await deliverReminderEmail(email, reminder.bookingId);
     return "sent";
   },
 

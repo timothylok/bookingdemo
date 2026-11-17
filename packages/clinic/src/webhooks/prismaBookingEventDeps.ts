@@ -87,7 +87,7 @@ export const prismaBookingEventDeps: BookingEventDeps = {
     return result.count > 0;
   },
 
-  async sendIntakeEmail({ to, patientName, token, startTime }) {
+  async sendIntakeEmail({ bookingId, to, patientName, token, startTime }) {
     const link = `${WEBAPP_URL}/intake/${token}`;
     const email = buildIntakeEmail({
       to,
@@ -97,6 +97,6 @@ export const prismaBookingEventDeps: BookingEventDeps = {
       clinicName: APP_NAME,
       timeZone: CLINIC_TIME_ZONE,
     });
-    await deliverIntakeEmail(email, link);
+    await deliverIntakeEmail(email, link, bookingId);
   },
 };
