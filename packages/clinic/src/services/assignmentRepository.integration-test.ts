@@ -1,4 +1,4 @@
-import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { prisma } from "@calcom/prisma";
 
@@ -16,6 +16,9 @@ describe("assignment repository", () => {
       select: { id: true },
     });
     userId = user.id;
+    // assignPractitioner registers a webhook when a secret is set. Test files run in parallel and share
+    // that single (userId, url) row, so this suite opts out and leaves webhook coverage to its own test.
+    vi.stubEnv("CLINIC_WEBHOOK_SECRET", "");
     const service = await prisma.clinicService.create({
       data: { name: "IT Assign Check", durationMin: 30, deliveryType: "video" },
       select: { id: true },
@@ -27,6 +30,7 @@ describe("assignment repository", () => {
     await prisma.clinicServiceAssignment.deleteMany({ where: { serviceId } });
     if (eventTypeId) await prisma.eventType.deleteMany({ where: { id: eventTypeId } });
     await prisma.clinicService.deleteMany({ where: { id: serviceId } });
+    vi.unstubAllEnvs();
   });
 
   it("assigns a practitioner, creating a linked EventType", async () => {

@@ -1,5 +1,6 @@
 import type { TFunction } from "i18next";
 
+import { ActionForm } from "../ActionForm";
 import { clinicButtonClass, clinicInputClass, clinicLabelClass, clinicSecondaryButtonClass } from "../formStyles";
 
 type Assignment = {
@@ -47,19 +48,19 @@ export function AssignmentsSection(props: {
                   {assignment.eventTypeId ? "" : ` · ${t("clinic_not_synced")}`}
                 </p>
               </div>
-              <form action={props.unassignAction}>
+              <ActionForm action={props.unassignAction}>
                 <input type="hidden" name="id" value={serviceId} />
                 <input type="hidden" name="assignmentId" value={assignment.id} />
                 <button type="submit" className={clinicSecondaryButtonClass}>
                   {t("clinic_remove")}
                 </button>
-              </form>
+              </ActionForm>
             </li>
           ))}
         </ul>
       )}
 
-      <form action={props.assignAction} className="grid items-end gap-4 sm:grid-cols-3">
+      <ActionForm action={props.assignAction} className="grid items-end gap-4 sm:grid-cols-3">
         <input type="hidden" name="id" value={serviceId} />
         <label>
           <span className={clinicLabelClass}>{t("clinic_practitioner")}</span>
@@ -88,7 +89,7 @@ export function AssignmentsSection(props: {
         <button type="submit" className={clinicButtonClass}>
           {t("clinic_assign")}
         </button>
-      </form>
+      </ActionForm>
     </section>
   );
 }

@@ -100,6 +100,20 @@ describe("syncAssignment with the Prisma adapter", () => {
     });
   });
 
+  it("syncs a service without a colour (stores SQL NULL, not JS null)", async () => {
+    await prisma.clinicService.update({
+      where: { id: serviceId },
+      data: { color: null, active: true },
+      select: { id: true },
+    });
+    const result = await syncAssignment(assignmentId, prismaSyncDeps);
+    const eventType = await prisma.eventType.findUniqueOrThrow({
+      where: { id: result.eventTypeId },
+      select: { eventTypeColor: true, hidden: true },
+    });
+    expect(eventType).toEqual({ eventTypeColor: null, hidden: false });
+  });
+
   it("recreates the EventType if the practitioner deleted it", async () => {
     const link = await prisma.clinicServiceAssignment.findUniqueOrThrow({
       where: { id: assignmentId },

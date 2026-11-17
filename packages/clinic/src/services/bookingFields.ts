@@ -1,4 +1,7 @@
-type BookingField = { name: string } & Record<string, unknown>;
+import type { Prisma } from "@calcom/prisma/client";
+
+// JSON-typed so the fields can be written straight into EventType.bookingFields.
+type BookingField = { name: string } & Record<string, Prisma.InputJsonValue>;
 
 // Mirrors upstream's attendeePhoneNumber system field (packages/features/bookings/lib/getBookingFields.ts),
 // but required and visible: clinics need a number for reminders and same-day changes.

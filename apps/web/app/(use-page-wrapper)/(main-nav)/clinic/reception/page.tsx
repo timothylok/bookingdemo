@@ -12,6 +12,7 @@ import {
 } from "@calcom/clinic/src/reception/receptionView";
 import dayjs from "@calcom/dayjs";
 
+import { ActionForm } from "~/clinic/ActionForm";
 import { clinicSecondaryButtonClass } from "~/clinic/formStyles";
 import { requireClinicRole } from "~/clinic/requireClinicRole";
 
@@ -177,13 +178,13 @@ const Page = async ({ searchParams: _searchParams }: PageProps) => {
                       {t(`clinic_status_${row.status.toLowerCase()}`)}
                     </span>
                     <span className="text-subtle w-28 text-xs">{t(`clinic_intake_status_${row.intake}`)}</span>
-                    <form action={toggleNoShowAction}>
+                    <ActionForm action={toggleNoShowAction}>
                       <input type="hidden" name="bookingId" value={row.bookingId} />
                       <input type="hidden" name="noShow" value={String(!row.noShow)} />
                       <button type="submit" className={clinicSecondaryButtonClass}>
                         {row.noShow ? t("clinic_reception_undo_no_show") : t("clinic_reception_mark_no_show")}
                       </button>
-                    </form>
+                    </ActionForm>
                   </li>
                 ))}
               </ul>

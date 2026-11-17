@@ -77,12 +77,15 @@ export function buildBookingCatalog(
       (a.locationName ?? "").localeCompare(b.locationName ?? "")
   );
 
-  const practitioners = [...new Map(offers.map((o) => [o.practitionerId, o.practitionerName])).entries()]
+  // Array.from (not spread) because this tsconfig's target cannot iterate Map iterators directly.
+  const practitioners = Array.from(new Map(offers.map((o) => [o.practitionerId, o.practitionerName])).entries())
     .map(([id, name]) => ({ id, name }))
     .sort((a, b) => a.name.localeCompare(b.name));
-  const services = [
-    ...new Map(offers.map((o) => [o.serviceId, { id: o.serviceId, name: o.serviceName, durationMin: o.durationMin }])).values(),
-  ].sort((a, b) => a.name.localeCompare(b.name));
+  const services = Array.from(
+    new Map(
+      offers.map((o) => [o.serviceId, { id: o.serviceId, name: o.serviceName, durationMin: o.durationMin }])
+    ).values()
+  ).sort((a, b) => a.name.localeCompare(b.name));
 
   return { offers, practitioners, services };
 }

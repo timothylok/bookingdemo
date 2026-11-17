@@ -1,9 +1,15 @@
 import { prisma } from "@calcom/prisma";
+import { Prisma } from "@calcom/prisma/client";
 
 import { withRequiredPhone } from "./bookingFields";
 import type { EventTypeData } from "./eventTypeMapping";
 import { uniqueSlug } from "./eventTypeMapping";
 import type { SyncDeps } from "./syncAssignment";
+
+// A nullable Json column rejects JS null; "no colour" must be written as SQL NULL via Prisma.DbNull.
+function toJsonColumn(value: EventTypeData["eventTypeColor"]) {
+  return value ?? Prisma.DbNull;
+}
 
 export const prismaSyncDeps: SyncDeps = {
   async findAssignment(id) {
@@ -39,6 +45,7 @@ export const prismaSyncDeps: SyncDeps = {
     return prisma.eventType.create({
       data: {
         ...data,
+        eventTypeColor: toJsonColumn(data.eventTypeColor),
         slug,
         userId,
         bookingFields: withRequiredPhone([]),
@@ -59,7 +66,11 @@ export const prismaSyncDeps: SyncDeps = {
     const { slug: _keepExistingSlug, ...rest } = data;
     await prisma.eventType.update({
       where: { id: eventTypeId },
-      data: { ...rest, bookingFields: withRequiredPhone(current.bookingFields) },
+      data: {
+        ...rest,
+        eventTypeColor: toJsonColumn(rest.eventTypeColor),
+        bookingFields: withRequiredPhone(current.bookingFields),
+      },
       select: { id: true },
     });
     return true;

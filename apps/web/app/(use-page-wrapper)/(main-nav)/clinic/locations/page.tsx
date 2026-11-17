@@ -5,6 +5,7 @@ import Link from "next/link";
 import { canManageCatalog } from "@calcom/clinic/src/auth/clinicRole";
 import { listLocations } from "@calcom/clinic/src/locations/locationRepository";
 
+import { ActionForm } from "~/clinic/ActionForm";
 import { clinicButtonClass, clinicSecondaryButtonClass } from "~/clinic/formStyles";
 import { LocationFields } from "~/clinic/locations/LocationFields";
 import { requireClinicRole } from "~/clinic/requireClinicRole";
@@ -62,13 +63,13 @@ const Page = async ({ searchParams: _searchParams }: PageProps) => {
                 <Link href={`/clinic/locations/${location.id}`} className={clinicSecondaryButtonClass}>
                   {t("clinic_edit")}
                 </Link>
-                <form action={toggleLocationActiveAction}>
+                <ActionForm action={toggleLocationActiveAction}>
                   <input type="hidden" name="id" value={location.id} />
                   <input type="hidden" name="active" value={String(!location.active)} />
                   <button type="submit" className={clinicSecondaryButtonClass}>
                     {location.active ? t("clinic_deactivate") : t("clinic_activate")}
                   </button>
-                </form>
+                </ActionForm>
               </li>
             ))}
           </ul>
@@ -77,12 +78,12 @@ const Page = async ({ searchParams: _searchParams }: PageProps) => {
 
       <section className="border-subtle rounded-md border p-6">
         <h2 className="text-emphasis mb-4 text-lg font-semibold">{t("clinic_add_location")}</h2>
-        <form action={createLocationAction} className="space-y-4">
+        <ActionForm action={createLocationAction} className="space-y-4">
           <LocationFields t={t} />
           <button type="submit" className={clinicButtonClass}>
             {t("clinic_add_location")}
           </button>
-        </form>
+        </ActionForm>
       </section>
     </ShellMainAppDir>
   );

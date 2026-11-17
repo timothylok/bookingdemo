@@ -9,6 +9,7 @@ import { listAssignments, listPractitioners } from "@calcom/clinic/src/services/
 import { getService } from "@calcom/clinic/src/services/serviceRepository";
 
 import { requireClinicRole } from "~/clinic/requireClinicRole";
+import { ActionForm } from "~/clinic/ActionForm";
 import { clinicButtonClass, clinicSecondaryButtonClass } from "~/clinic/formStyles";
 import { AssignmentsSection } from "~/clinic/services/AssignmentsSection";
 import { ServiceFields } from "~/clinic/services/ServiceFields";
@@ -50,7 +51,7 @@ const Page = async ({ params: _params, searchParams: _searchParams }: PageProps)
           {error}
         </p>
       )}
-      <form action={updateServiceAction} className="border-subtle space-y-4 rounded-md border p-6">
+      <ActionForm action={updateServiceAction} className="border-subtle space-y-4 rounded-md border p-6">
         <input type="hidden" name="id" value={service.id} />
         <ServiceFields t={t} defaults={service} />
         <div className="flex gap-2">
@@ -61,7 +62,7 @@ const Page = async ({ params: _params, searchParams: _searchParams }: PageProps)
             {t("clinic_back")}
           </Link>
         </div>
-      </form>
+      </ActionForm>
       <AssignmentsSection
         t={t}
         serviceId={service.id}

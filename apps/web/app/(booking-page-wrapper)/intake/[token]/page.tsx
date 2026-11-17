@@ -9,6 +9,7 @@ import { findIntakeFormByToken } from "@calcom/clinic/src/forms/intakeFormReposi
 import { isIntakeTokenUsable } from "@calcom/clinic/src/forms/intakeToken";
 import { APP_NAME } from "@calcom/lib/constants";
 
+import { ActionForm } from "~/clinic/ActionForm";
 import { clinicButtonClass, clinicInputClass, clinicLabelClass } from "~/clinic/formStyles";
 
 import { submitIntakeAction } from "./actions";
@@ -67,7 +68,7 @@ const Page = async ({ params: _params, searchParams: _searchParams }: PageProps)
           {t("clinic_intake_error")}
         </p>
       )}
-      <form action={submitIntakeAction} className="border-subtle mt-6 space-y-5 rounded-md border p-6">
+      <ActionForm action={submitIntakeAction} className="border-subtle mt-6 space-y-5 rounded-md border p-6">
         <input type="hidden" name="token" value={token} />
         {fields.map((field) => (
           <label key={field.name} className="block">
@@ -92,7 +93,7 @@ const Page = async ({ params: _params, searchParams: _searchParams }: PageProps)
         <button type="submit" className={clinicButtonClass}>
           {t("clinic_intake_submit")}
         </button>
-      </form>
+      </ActionForm>
     </Shell>
   );
 };

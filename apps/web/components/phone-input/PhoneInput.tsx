@@ -1,5 +1,6 @@
 "use client";
 
+import { getFallbackPhoneCountry } from "@calcom/clinic/src/config";
 import { isSupportedCountry } from "libphonenumber-js";
 import type { CSSProperties } from "react";
 import { useState, useEffect } from "react";
@@ -36,7 +37,7 @@ function BasePhoneInput({
   className = "",
   onChange,
   value,
-  defaultCountry = "us",
+  defaultCountry = getFallbackPhoneCountry(),
   ...rest
 }: PhoneInputProps) {
   const isPlatform = useIsPlatform();
@@ -162,7 +163,7 @@ function BasePhoneInputWeb({
 
 const useDefaultCountry = () => {
   const defaultPhoneCountryFromStore = useBookerStore((state) => state.defaultPhoneCountry);
-  const [defaultCountry, setDefaultCountry] = useState<CountryCode>(defaultPhoneCountryFromStore || "us");
+  const [defaultCountry, setDefaultCountry] = useState<CountryCode>(defaultPhoneCountryFromStore || (getFallbackPhoneCountry() as CountryCode));
   const query = trpc.viewer.public.countryCode.useQuery(undefined, {
     refetchOnWindowFocus: false,
     refetchOnReconnect: false,
@@ -188,7 +189,7 @@ const useDefaultCountry = () => {
         if (navCountry && isSupportedCountry(navCountry)) {
           setDefaultCountry(navCountry.toLowerCase() as CountryCode);
         } else {
-          setDefaultCountry("us");
+          setDefaultCountry(getFallbackPhoneCountry() as CountryCode);
         }
       }
     },

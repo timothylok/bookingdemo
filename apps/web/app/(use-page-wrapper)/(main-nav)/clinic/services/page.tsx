@@ -6,6 +6,7 @@ import { canManageCatalog } from "@calcom/clinic/src/auth/clinicRole";
 import { listServices } from "@calcom/clinic/src/services/serviceRepository";
 
 import { requireClinicRole } from "~/clinic/requireClinicRole";
+import { ActionForm } from "~/clinic/ActionForm";
 import { clinicButtonClass, clinicSecondaryButtonClass } from "~/clinic/formStyles";
 import { ServiceFields } from "~/clinic/services/ServiceFields";
 
@@ -70,13 +71,13 @@ const Page = async ({ searchParams: _searchParams }: PageProps) => {
                 <Link href={`/clinic/services/${service.id}`} className={clinicSecondaryButtonClass}>
                   {t("clinic_edit")}
                 </Link>
-                <form action={toggleServiceActiveAction}>
+                <ActionForm action={toggleServiceActiveAction}>
                   <input type="hidden" name="id" value={service.id} />
                   <input type="hidden" name="active" value={String(!service.active)} />
                   <button type="submit" className={clinicSecondaryButtonClass}>
                     {service.active ? t("clinic_deactivate") : t("clinic_activate")}
                   </button>
-                </form>
+                </ActionForm>
               </li>
             ))}
           </ul>
@@ -85,12 +86,12 @@ const Page = async ({ searchParams: _searchParams }: PageProps) => {
 
       <section className="border-subtle rounded-md border p-6">
         <h2 className="text-emphasis mb-4 text-lg font-semibold">{t("clinic_add_service")}</h2>
-        <form action={createServiceAction} className="space-y-4">
+        <ActionForm action={createServiceAction} className="space-y-4">
           <ServiceFields t={t} />
           <button type="submit" className={clinicButtonClass}>
             {t("clinic_add_service")}
           </button>
-        </form>
+        </ActionForm>
       </section>
     </ShellMainAppDir>
   );

@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { canManageCatalog } from "@calcom/clinic/src/auth/clinicRole";
 import { getLocation } from "@calcom/clinic/src/locations/locationRepository";
 
+import { ActionForm } from "~/clinic/ActionForm";
 import { clinicButtonClass, clinicSecondaryButtonClass } from "~/clinic/formStyles";
 import { LocationFields } from "~/clinic/locations/LocationFields";
 import { requireClinicRole } from "~/clinic/requireClinicRole";
@@ -44,7 +45,7 @@ const Page = async ({ params: _params, searchParams: _searchParams }: PageProps)
           {error}
         </p>
       )}
-      <form action={updateLocationAction} className="border-subtle space-y-4 rounded-md border p-6">
+      <ActionForm action={updateLocationAction} className="border-subtle space-y-4 rounded-md border p-6">
         <input type="hidden" name="id" value={location.id} />
         <LocationFields t={t} defaults={location} />
         <div className="flex gap-2">
@@ -55,7 +56,7 @@ const Page = async ({ params: _params, searchParams: _searchParams }: PageProps)
             {t("clinic_back")}
           </Link>
         </div>
-      </form>
+      </ActionForm>
     </ShellMainAppDir>
   );
 };
