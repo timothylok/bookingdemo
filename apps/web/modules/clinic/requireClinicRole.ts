@@ -1,8 +1,9 @@
 import { cookies, headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import type { ClinicRoleName } from "@calcom/clinic/src/auth/clinicRole";
 import { getClinicRole } from "@calcom/clinic/src/auth/getClinicRole";
+import { isClinicMode } from "@calcom/clinic/src/config";
 import { getServerSession } from "@calcom/features/auth/lib/getServerSession";
 
 import { buildLegacyRequest } from "@lib/buildLegacyCtx";
@@ -11,6 +12,7 @@ import { buildLegacyRequest } from "@lib/buildLegacyCtx";
 export async function requireClinicRole(
   isAllowed: (role: ClinicRoleName) => boolean
 ): Promise<{ userId: number; role: ClinicRoleName }> {
+  if (!isClinicMode()) notFound();
   const session = await getServerSession({ req: buildLegacyRequest(await headers(), await cookies()) });
   if (!session?.user?.id) redirect("/auth/login");
 

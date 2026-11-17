@@ -3,6 +3,7 @@ import { timingSafeEqual } from "node:crypto";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
+import { isClinicMode } from "@calcom/clinic/src/config";
 import { prismaReminderDeps } from "@calcom/clinic/src/reminders/prismaReminderDeps";
 import { processDueReminders } from "@calcom/clinic/src/reminders/reminders";
 
@@ -17,6 +18,7 @@ function isAuthorised(req: NextRequest): boolean {
 }
 
 export async function GET(req: NextRequest) {
+  if (!isClinicMode()) return NextResponse.json({ message: "not found" }, { status: 404 });
   if (!isAuthorised(req)) return NextResponse.json({ message: "unauthorised" }, { status: 401 });
   const summary = await processDueReminders(new Date(), prismaReminderDeps);
   return NextResponse.json(summary);

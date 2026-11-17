@@ -30,6 +30,15 @@ export function buildIntakeEmail(input: {
 }
 
 /**
+ * The token in an intake link opens a patient's health form, so production logs only ever see a
+ * redacted link. Local development keeps the full link so the form can be tested without email.
+ */
+export function redactIntakeLink(link: string, nodeEnv: string | undefined = process.env.NODE_ENV): string {
+  if (nodeEnv !== "production") return link;
+  return link.replace(/\/intake\/[^/?#]+/, "/intake/[redacted]");
+}
+
+/**
  * Transport is chosen by CLINIC_EMAIL_TRANSPORT. Only "log" exists so far: it records that an email
  * would be sent (link only, never the patient's name or answers). A real SMTP transport must be added
  * before going live.
@@ -37,7 +46,7 @@ export function buildIntakeEmail(input: {
 export async function deliverIntakeEmail(email: IntakeEmail, link: string): Promise<void> {
   const transport = process.env.CLINIC_EMAIL_TRANSPORT ?? "log";
   if (transport === "log") {
-    console.info(`[clinic] intake email (not sent, log transport): ${link}`);
+    console.info(`[clinic] intake email (not sent, log transport): ${redactIntakeLink(link)}`);
     return;
   }
   throw new Error(`Unknown CLINIC_EMAIL_TRANSPORT "${transport}" for intake email`);

@@ -1,7 +1,9 @@
 import type { PageProps } from "app/_types";
 import { getTranslate } from "app/_utils";
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 
+import { isClinicMode } from "@calcom/clinic/src/config";
 import { parseFormTemplate } from "@calcom/clinic/src/forms/formTemplate";
 import { findIntakeFormByToken } from "@calcom/clinic/src/forms/intakeFormRepository";
 import { isIntakeTokenUsable } from "@calcom/clinic/src/forms/intakeToken";
@@ -29,6 +31,7 @@ function Shell({ children }: { children: React.ReactNode }) {
 }
 
 const Page = async ({ params: _params, searchParams: _searchParams }: PageProps) => {
+  if (!isClinicMode()) notFound();
   const params = await _params;
   const searchParams = await _searchParams;
   const t = await getTranslate();

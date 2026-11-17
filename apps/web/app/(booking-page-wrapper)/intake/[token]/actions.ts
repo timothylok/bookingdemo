@@ -1,12 +1,14 @@
 "use server";
 
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
+import { isClinicMode } from "@calcom/clinic/src/config";
 import { parseFormTemplate, validateFormResponses } from "@calcom/clinic/src/forms/formTemplate";
 import { findIntakeFormByToken, submitIntakeForm } from "@calcom/clinic/src/forms/intakeFormRepository";
 import { isIntakeTokenUsable } from "@calcom/clinic/src/forms/intakeToken";
 
 export async function submitIntakeAction(formData: FormData) {
+  if (!isClinicMode()) notFound();
   const token = String(formData.get("token") ?? "");
   const path = `/intake/${encodeURIComponent(token)}`;
   const form = await findIntakeFormByToken(token);
