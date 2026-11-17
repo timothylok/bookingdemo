@@ -17,9 +17,11 @@ Updated each loop iteration. Plan: `C:\Users\timlo\.claude\plans\pure-zooming-mu
 - Item 5 (part): /clinic/reception (admin + reception roles) - summary cards, day/week views, staff filter, intake status, no-show toggle; browser-verified with seeded bookings (5339e6b)
 - Item 5 DONE: /clinic/patients search + detail; intake answers visible only to admin or the treating practitioner (browser-verified as admin and as reception)
 - Item 6 (part): ClinicReminder (migration 20261117020000_clinic_reminders), scheduled/cancelled from webhooks, GET /api/clinic/cron/reminders with Bearer CRON_SECRET (curl-verified 401/401/200), claim-before-send idempotency, integration-tested against seeded bookings
+- Item 6 DONE: security pass - clinic-mode 404 gates on all clinic routes, intake token redaction in production logs, 256 KB webhook body cap, routeGuards.test.ts regression guard over every clinic page/action/route
+- MVP items 1-6 COMPLETE
 
 ## In progress
-- Item 6: security pass across all clinic routes
+- Post-MVP hardening: follow-ups listed under Notes (NZ phone default, Booker branding), full type-check of touched upstream files
 
 ## Blocked / needs your decision
 - Deploy step: add `{ "path": "/api/clinic/cron/reminders", "schedule": "*/5 * * * *" }` to apps/web/vercel.json crons (upstream file) and set CRON_SECRET in Vercel.
@@ -27,7 +29,7 @@ Updated each loop iteration. Plan: `C:\Users\timlo\.claude\plans\pure-zooming-mu
 - Replace Cal.com logos/images in `apps/web/public` with clinic branding (needs your artwork)
 
 ## Next
-- Item 6: reminders (24h email via log transport) + cron route (protected by CRON secret), cancel on cancellation; then security pass across all clinic routes
+- Follow-ups below, then a final full verification (type-check, unit + integration tests, browser smoke test of every clinic page)
 
 ## Notes
 - Unverified: actual Cal.com -> clinic webhook delivery for a real booking (making a real booking would send emails). Route verified with signed curl requests; SSRF checks only apply to tRPC webhook create/edit, and self-hosted allows private IPs.
