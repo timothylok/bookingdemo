@@ -1,6 +1,7 @@
 import { ErrorWithCode } from "@calcom/lib/errors";
 import { prisma } from "@calcom/prisma";
 
+import { ensurePractitionerWebhook } from "../webhooks/ensurePractitionerWebhook";
 import { prismaSyncDeps } from "./prismaSyncDeps";
 import { syncAssignment } from "./syncAssignment";
 
@@ -50,7 +51,9 @@ export async function assignPractitioner(input: {
   }
 
   const assignment = await prisma.clinicServiceAssignment.create({ data: input, select: { id: true } });
-  return syncAssignment(assignment.id, prismaSyncDeps);
+  const result = await syncAssignment(assignment.id, prismaSyncDeps);
+  await ensurePractitionerWebhook(input.practitionerUserId);
+  return result;
 }
 
 /** Hides the EventType instead of deleting it so past and upcoming bookings keep their event type. */
