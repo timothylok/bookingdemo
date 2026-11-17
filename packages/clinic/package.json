@@ -2,5 +2,8 @@
   "name": "@calcom/clinic",
   "description": "Clinic booking layer (services, patients, intake forms, reminders, reception) on top of Cal.com scheduling",
   "private": true,
-  "version": "0.1.0"
+  "version": "0.1.0",
+  "dependencies": {
+    "zod": "3.25.76"
+  }
 }

@@ -2217,6 +2217,8 @@ __metadata:
 "@calcom/clinic@workspace:*, @calcom/clinic@workspace:packages/clinic":
   version: 0.0.0-use.local
   resolution: "@calcom/clinic@workspace:packages/clinic"
+  dependencies:
+    zod: "npm:3.25.76"
   languageName: unknown
   linkType: soft
 
