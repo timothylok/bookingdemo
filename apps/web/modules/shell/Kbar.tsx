@@ -1,6 +1,8 @@
 import { useSession } from "next-auth/react";
 
 import { appStoreMetadata } from "@calcom/app-store/appStoreMetaData";
+import { isClinicMode } from "@calcom/clinic/src/config";
+import { applyClinicKbarActions } from "@calcom/clinic/src/navigation/applyClinicKbarActions";
 import dayjs from "@calcom/dayjs";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { isMac } from "@calcom/lib/isMac";
@@ -220,7 +222,7 @@ const KBAR_ACTION_CONFIGS: ActionConfig[] = [
 ];
 
 function buildKbarActions(push: (href: string) => void): Action[] {
-  const staticActions: Action[] = KBAR_ACTION_CONFIGS.map((config) => ({
+  const staticActions: Action[] = applyClinicKbarActions(KBAR_ACTION_CONFIGS, isClinicMode()).map((config) => ({
     id: config.id,
     name: config.name,
     section: config.section,

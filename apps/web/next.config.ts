@@ -4,6 +4,8 @@ import type { NextConfig } from "next";
 import type { RouteHas } from "next/dist/lib/load-custom-routes";
 import { withAxiom } from "next-axiom";
 import i18nConfig from "@calcom/i18n/next-i18next.config";
+import { isClinicMode } from "../../packages/clinic/src/config";
+import { getClinicRedirects } from "../../packages/clinic/src/navigation/clinicRedirects";
 import packageJson from "./package.json";
 import {
   nextJsOrgRewriteConfig,
@@ -674,7 +676,7 @@ const nextConfig = (phase: string): NextConfig => {
         );
       }
 
-      return redirects;
+      return [...getClinicRedirects(isClinicMode()), ...redirects];
     },
   };
 };

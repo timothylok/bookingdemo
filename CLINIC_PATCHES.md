@@ -27,6 +27,8 @@ Rules:
 | `packages/i18n/package.json` | dependency `@calcom/clinic` | for the hook above |
 | `apps/web/package.json` | dependency `@calcom/clinic` | |
 | `apps/web/next.config.ts` | `transpilePackages += "@calcom/clinic"` | TS source package |
+| `apps/web/modules/shell/Kbar.tsx` | wraps `KBAR_ACTION_CONFIGS` with `applyClinicKbarActions(...)` (+2 imports) | hide Workflows/Teams in command palette |
+| `apps/web/next.config.ts` | `return redirects` -> `return [...getClinicRedirects(isClinicMode()), ...redirects]` (+2 relative imports) | redirect /teams /workflows /routing /insights to /event-types |
 | `turbo.json` | `globalEnv += "NEXT_PUBLIC_CLINIC_MODE"` | turbo strict env passthrough |
 
 ## Clinic-owned files (no conflict risk)
@@ -37,14 +39,11 @@ Rules:
 
 ## Branding (env only, no code)
 
-`NEXT_PUBLIC_APP_NAME`, `NEXT_PUBLIC_COMPANY_NAME`, `NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS`, plus logos in
+`NEXT_PUBLIC_APP_NAME`, `NEXT_PUBLIC_COMPANY_NAME`, `NEXT_PUBLIC_SUPPORT_MAIL_ADDRESS` (see `clinic.env.example`), plus logos in
 `apps/web/public/` (TODO: replace before the first clinic goes live, because Cal.com marks are trademarked).
 
 ## Known follow-ups
 
-- `apps/web/modules/shell/Kbar.tsx` still lists Teams/Workflows in the command palette.
-- The direct routes `/teams`, `/workflows`, `/routing` and `/insights` are still reachable by URL (they are gated by /ee
-  licensing). Consider a redirect in clinic mode.
 
 ## Upgrading from upstream
 
