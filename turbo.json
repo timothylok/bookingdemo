@@ -3,6 +3,9 @@
   "globalDependencies": ["yarn.lock"],
   "globalEnv": [
     "NEXT_PUBLIC_CLINIC_MODE",
+    "CLINIC_WEBHOOK_SECRET",
+    "CLINIC_EMAIL_TRANSPORT",
+    "CLINIC_TIME_ZONE",
     "ALLOWED_HOSTNAMES",
     "ANALYZE",
     "AWAITING_PAYMENT_EMAIL_DELAY_MINUTES",

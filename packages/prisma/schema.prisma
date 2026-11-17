@@ -3410,3 +3410,63 @@ model ClinicStaffRole {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
+
+model ClinicPatient {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique // stored lowercased
+  phone     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings ClinicPatientBooking[]
+  forms    ClinicPatientForm[]
+}
+
+model ClinicPatientBooking {
+  id         Int      @id @default(autoincrement())
+  patientId  Int
+  bookingId  Int      @unique // Booking.id (no relation)
+  bookingUid String   @unique // Booking.uid (no relation)
+  status     String // last status seen from a Cal.com webhook
+  startTime  DateTime
+  endTime    DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  patient ClinicPatient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@index([patientId])
+  @@index([startTime])
+}
+
+model ClinicFormTemplate {
+  id         Int      @id @default(autoincrement())
+  name       String
+  schemaJson Json
+  isDefault  Boolean  @default(false)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  forms ClinicPatientForm[]
+}
+
+model ClinicPatientForm {
+  id           Int       @id @default(autoincrement())
+  patientId    Int
+  bookingId    Int       @unique // Booking.id (no relation)
+  templateId   Int
+  // Only a SHA-256 of the emailed token is stored, so a DB leak cannot open patients' health forms.
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  responseJson Json?
+  submittedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  patient  ClinicPatient      @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  template ClinicFormTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
+
+  @@index([patientId])
+}

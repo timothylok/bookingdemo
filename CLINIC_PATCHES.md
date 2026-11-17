@@ -29,7 +29,7 @@ Rules:
 | `apps/web/next.config.ts` | `transpilePackages += "@calcom/clinic"` | TS source package |
 | `apps/web/modules/shell/Kbar.tsx` | wraps `KBAR_ACTION_CONFIGS` with `applyClinicKbarActions(...)` (+2 imports) | hide Workflows/Teams in command palette |
 | `apps/web/next.config.ts` | `return redirects` -> `return [...getClinicRedirects(isClinicMode()), ...redirects]` (+2 relative imports) | redirect /teams /workflows /routing /insights to /event-types |
-| `turbo.json` | `globalEnv += "NEXT_PUBLIC_CLINIC_MODE"` | turbo strict env passthrough |
+| `turbo.json` | `globalEnv += NEXT_PUBLIC_CLINIC_MODE, CLINIC_WEBHOOK_SECRET, CLINIC_EMAIL_TRANSPORT, CLINIC_TIME_ZONE` | turbo strict env passthrough |
 
 ## Clinic-owned files (no conflict risk)
 
