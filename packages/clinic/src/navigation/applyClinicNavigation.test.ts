@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { isClinicMode } from "../config";
 import { applyClinicNavigation } from "./applyClinicNavigation";
@@ -48,8 +48,16 @@ describe("isClinicMode", () => {
     ["1", true],
     ["true", true],
     ["0", false],
-    [undefined, false],
+    ["", false],
   ])("NEXT_PUBLIC_CLINIC_MODE=%s -> %s", (value, expected) => {
-    expect(isClinicMode({ NEXT_PUBLIC_CLINIC_MODE: value })).toBe(expected);
+    expect(isClinicMode(value)).toBe(expected);
+  });
+
+  it("reads process.env.NEXT_PUBLIC_CLINIC_MODE when called without an argument", () => {
+    vi.stubEnv("NEXT_PUBLIC_CLINIC_MODE", "1");
+    expect(isClinicMode()).toBe(true);
+    vi.stubEnv("NEXT_PUBLIC_CLINIC_MODE", "");
+    expect(isClinicMode()).toBe(false);
+    vi.unstubAllEnvs();
   });
 });

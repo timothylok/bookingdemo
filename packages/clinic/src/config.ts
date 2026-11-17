@@ -1,4 +1,5 @@
-// NEXT_PUBLIC_ so the same flag works in client components (navigation) and on the server.
-export function isClinicMode(env: Record<string, string | undefined> = process.env): boolean {
-  return env.NEXT_PUBLIC_CLINIC_MODE === "1" || env.NEXT_PUBLIC_CLINIC_MODE === "true";
+// Must read process.env.NEXT_PUBLIC_CLINIC_MODE literally: Next only inlines NEXT_PUBLIC_* in
+// client bundles when accessed this way, so reading it via the process.env object is always false in the browser.
+export function isClinicMode(value: string | undefined = process.env.NEXT_PUBLIC_CLINIC_MODE): boolean {
+  return value === "1" || value === "true";
 }

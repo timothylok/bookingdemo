@@ -53,3 +53,13 @@ git fetch upstream --tags
 git merge vX.Y.Z          # conflicts should only appear in the files listed above
 yarn install && TZ=UTC yarn test packages/clinic
 ```
+
+## Windows dev setup gotchas
+
+- **Path casing must match the real folder name on disk.** If the folder is `D:\AI` but you install from `D:\ai`,
+  yarn creates `node_modules` junctions pointing at `D:\ai\...`. Turbopack then treats them as outside the project and every
+  `@calcom/*` import fails with "Module not found" (all pages 500). Always `cd` into the exact on-disk casing
+  (check with `Get-ChildItem D:\ -Directory`), and if links were created wrongly, remove them with `cmd /c rmdir` and re-run `yarn install`.
+- **Use Turbopack (upstream's `yarn workspace @calcom/web dev`).** `next dev --webpack` fails on upstream's `node:path` import in `packages/i18n/next-i18next.config.js`.
+- Do **not** replace `packages/prisma/.env` with a real copy as the README suggests: `.gitignore` un-ignores that path, so DB credentials could be committed.
+- `NEXT_PUBLIC_*` flags must be read as a literal `process.env.NEXT_PUBLIC_X` for Next to inline them in client bundles (see `packages/clinic/src/config.ts`).
