@@ -13,19 +13,22 @@ Updated each loop iteration. Plan: `C:\Users\timlo\.claude\plans\pure-zooming-mu
 - Item 2 DONE: /clinic/locations admin (27c3af4); practitioner assignment UI on service edit page -> EventType created and bookable at /pro/initial-consultation-auckland-cbd-clinic (browser + DB verified); assignment integration tests
 - Item 3 DONE: public /book (no login) -> offer cards -> existing Booker; clinic EventTypes require visible patient phone (merged into bookingFields); browser-verified booking form shows Name*, Email*, Phone*
 - Item 4 (part): ClinicPatient/ClinicPatientBooking/ClinicFormTemplate/ClinicPatientForm models (migration 20261117010000_clinic_patients_forms, seeds default health questionnaire); POST /api/clinic/webhooks/cal verifies X-Cal-Signature-256, upserts patient + booking, creates one hashed-token intake form per booking (curl-verified: 401 bad sig, 200 create, idempotent redelivery) (22609cb)
+- Item 4 DONE: /intake/[token] questionnaire (noindex, template-driven, single-use conditional submit, browser-verified, answers stored) (4d4070c); per-practitioner Cal.com webhook auto-registered on assignment (integration-tested)
 
 ## In progress
-- Item 4: /intake/[token] page + submit; auto-register a Cal.com webhook per assigned practitioner pointing at /api/clinic/webhooks/cal
+- Item 5: /clinic/reception dashboard
 
 ## Blocked / needs your decision
 - Real email transport for intake/reminder emails (SMTP or provider). Currently CLINIC_EMAIL_TRANSPORT=log only writes the link to the server log.
 - Replace Cal.com logos/images in `apps/web/public` with clinic branding (needs your artwork)
 
 ## Next
-- Item 4: Cal.com webhook -> ClinicPatient upsert + ClinicPatientBooking link; ClinicFormTemplate/ClinicPatientForm models; /intake/[token]; intake email (render only, no real send locally)
-- Then items 5-6
+- Item 5: reception dashboard (today/tomorrow/cancelled/no-shows/intake status; day/week/staff views) + /clinic/patients
+- Item 6: reminders + cron + security pass
 
 ## Notes
+- Unverified: actual Cal.com -> clinic webhook delivery for a real booking (making a real booking would send emails). Route verified with signed curl requests; SSRF checks only apply to tRPC webhook create/edit, and self-hosted allows private IPs.
+- Existing local assignment (pro) predates auto-registration; re-assign or run ensurePractitionerWebhook to register its webhook.
 - Local dev data: test patient test.patient@example.com with fake bookingId 999001 (created by a signed curl webhook test).
 - Follow-up: Booker phone input defaults to US (+1); should default to NZ.
 - Follow-up: Booker footer still shows the Cal.com logo (branding).
