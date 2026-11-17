@@ -6,11 +6,8 @@ import { canManageCatalog } from "@calcom/clinic/src/auth/clinicRole";
 import { listServices } from "@calcom/clinic/src/services/serviceRepository";
 
 import { requireClinicRole } from "~/clinic/requireClinicRole";
-import {
-  ServiceFields,
-  clinicButtonClass,
-  clinicSecondaryButtonClass,
-} from "~/clinic/services/ServiceFields";
+import { clinicButtonClass, clinicSecondaryButtonClass } from "~/clinic/formStyles";
+import { ServiceFields } from "~/clinic/services/ServiceFields";
 
 import { ShellMainAppDir } from "../../ShellMainAppDir";
 import { createServiceAction, toggleServiceActiveAction } from "./actions";

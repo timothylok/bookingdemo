@@ -29,5 +29,13 @@
   "clinic_inactive": "Inactive",
   "clinic_no_services": "No services yet. Add your first one below.",
   "clinic_assigned_practitioners": "Practitioners",
-  "clinic_back": "Back"
+  "clinic_back": "Back",
+  "clinic_locations_subtitle": "Where appointments happen: clinic sites, video or phone.",
+  "clinic_location_name": "Location name",
+  "clinic_location_kind": "Type",
+  "clinic_address": "Address",
+  "clinic_phone": "Phone",
+  "clinic_add_location": "Add location",
+  "clinic_edit_location": "Edit location",
+  "clinic_no_locations": "No locations yet. Add your first one below."
 }
