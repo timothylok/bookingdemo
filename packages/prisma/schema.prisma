@@ -3470,3 +3470,28 @@ model ClinicPatientForm {
 
   @@index([patientId])
 }
+
+enum ClinicReminderStatus {
+  pending
+  sending
+  sent
+  cancelled
+  failed
+}
+
+model ClinicReminder {
+  id        Int                  @id @default(autoincrement())
+  bookingId Int // Booking.id (no relation)
+  kind      String // e.g. "email_24h"
+  sendAt    DateTime
+  status    ClinicReminderStatus @default(pending)
+  attempts  Int                  @default(0)
+  // Error class only; never patient details.
+  lastError String?
+  sentAt    DateTime?
+  createdAt DateTime             @default(now())
+  updatedAt DateTime             @updatedAt
+
+  @@unique([bookingId, kind])
+  @@index([status, sendAt])
+}

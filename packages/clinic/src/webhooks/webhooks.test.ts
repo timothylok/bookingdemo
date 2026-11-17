@@ -101,6 +101,8 @@ describe("handleBookingEvent", () => {
     hasIntakeForm: vi.fn().mockResolvedValue(false),
     createIntakeForm: vi.fn().mockResolvedValue({ created: true }),
     sendIntakeEmail: vi.fn().mockResolvedValue(undefined),
+    scheduleReminder: vi.fn().mockResolvedValue(undefined),
+    cancelReminders: vi.fn().mockResolvedValue(undefined),
     ...overrides,
   });
 
@@ -131,9 +133,20 @@ describe("handleBookingEvent", () => {
     expect(deps.sendIntakeEmail).not.toHaveBeenCalled();
   });
 
-  it("only updates the booking status on cancellation", async () => {
+  it("schedules the 24h reminder for a new booking", async () => {
+    const deps = makeDeps();
+    await handleBookingEvent(event("BOOKING_CREATED"), deps, new Date("2026-11-17T10:00:00Z"));
+    expect(deps.scheduleReminder).toHaveBeenCalledWith({
+      bookingId: 42,
+      kind: "email_24h",
+      sendAt: new Date("2026-11-19T01:00:00Z"),
+    });
+  });
+
+  it("only updates the booking status and cancels reminders on cancellation", async () => {
     const deps = makeDeps();
     await handleBookingEvent(event("BOOKING_CANCELLED"), deps);
+    expect(deps.cancelReminders).toHaveBeenCalledWith(42);
     expect(deps.upsertPatientBooking).toHaveBeenCalledWith(expect.objectContaining({ status: "CANCELLED" }));
     expect(deps.createIntakeForm).not.toHaveBeenCalled();
   });

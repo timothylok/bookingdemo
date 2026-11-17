@@ -1,4 +1,5 @@
 import { createIntakeToken } from "../forms/intakeToken";
+import { planReminder } from "../reminders/reminders";
 import type { BookingEvent } from "./parseBookingEvent";
 
 export type BookingEventDeps = {
@@ -19,6 +20,8 @@ export type BookingEventDeps = {
     expiresAt: Date;
   }): Promise<{ created: boolean }>;
   sendIntakeEmail(input: { to: string; patientName: string; token: string; startTime: Date }): Promise<void>;
+  scheduleReminder(input: { bookingId: number; kind: string; sendAt: Date }): Promise<void>;
+  cancelReminders(bookingId: number): Promise<void>;
 };
 
 export type HandleResult = { patientId: number; intakeFormCreated: boolean };
@@ -27,7 +30,11 @@ export type HandleResult = { patientId: number; intakeFormCreated: boolean };
  * Idempotent: Cal.com may redeliver a webhook, so every write is an upsert and the intake form
  * (and its email) is only created once per booking.
  */
-export async function handleBookingEvent(event: BookingEvent, deps: BookingEventDeps): Promise<HandleResult> {
+export async function handleBookingEvent(
+  event: BookingEvent,
+  deps: BookingEventDeps,
+  now: Date = new Date()
+): Promise<HandleResult> {
   const patient = await deps.upsertPatient(event.patient);
   await deps.upsertPatientBooking({
     patientId: patient.id,
@@ -37,6 +44,13 @@ export async function handleBookingEvent(event: BookingEvent, deps: BookingEvent
     startTime: event.startTime,
     endTime: event.endTime,
   });
+
+  const reminder = planReminder(event.trigger, event.startTime, now);
+  if (reminder.action === "schedule") {
+    await deps.scheduleReminder({ bookingId: event.bookingId, kind: reminder.kind, sendAt: reminder.sendAt });
+  } else if (reminder.action === "cancel") {
+    await deps.cancelReminders(event.bookingId);
+  }
 
   if (event.trigger !== "BOOKING_CREATED" || (await deps.hasIntakeForm(event.bookingId))) {
     return { patientId: patient.id, intakeFormCreated: false };

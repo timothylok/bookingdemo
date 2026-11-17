@@ -54,6 +54,23 @@ export const prismaBookingEventDeps: BookingEventDeps = {
     }
   },
 
+  async scheduleReminder({ bookingId, kind, sendAt }) {
+    // A reschedule resets the reminder so it fires for the new time even if the old one was sent.
+    await prisma.clinicReminder.upsert({
+      where: { bookingId_kind: { bookingId, kind } },
+      update: { sendAt, status: "pending", attempts: 0, lastError: null, sentAt: null },
+      create: { bookingId, kind, sendAt },
+      select: { id: true },
+    });
+  },
+
+  async cancelReminders(bookingId) {
+    await prisma.clinicReminder.updateMany({
+      where: { bookingId, status: { in: ["pending", "failed"] } },
+      data: { status: "cancelled" },
+    });
+  },
+
   async sendIntakeEmail({ to, patientName, token, startTime }) {
     const link = `${WEBAPP_URL}/intake/${token}`;
     const email = buildIntakeEmail({
