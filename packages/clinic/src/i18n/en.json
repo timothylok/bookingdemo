@@ -83,5 +83,14 @@
   "clinic_status_rejected": "Declined",
   "clinic_intake_status_submitted": "Intake done",
   "clinic_intake_status_pending": "Intake pending",
-  "clinic_intake_status_none": "No intake"
+  "clinic_intake_status_none": "No intake",
+  "clinic_patients_subtitle": "Everyone who has booked with the clinic.",
+  "clinic_patients_search": "Search by name, email or phone",
+  "clinic_patients_none": "No patients found.",
+  "clinic_patients_appointments_one": "{{count}} appointment",
+  "clinic_patients_appointments_other": "{{count}} appointments",
+  "clinic_patients_latest": "latest",
+  "clinic_patients_history": "Appointments",
+  "clinic_patients_answers_restricted": "Questionnaire answers are only visible to the treating practitioner and clinic admins.",
+  "clinic_unknown_booking": "Booking no longer available"
 }

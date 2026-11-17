@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { canManageCatalog, canViewReception, resolveClinicRole } from "./clinicRole";
+import {
+  canManageCatalog,
+  canViewIntakeAnswers,
+  canViewPatients,
+  canViewReception,
+  resolveClinicRole,
+} from "./clinicRole";
 
 describe("resolveClinicRole", () => {
   it("uses the explicit clinic staff role when present", () => {
@@ -23,6 +29,20 @@ describe("permissions", () => {
     expect(canManageCatalog("admin")).toBe(true);
     expect(canManageCatalog("reception")).toBe(false);
     expect(canManageCatalog("practitioner")).toBe(false);
+  });
+
+  it("all clinic roles can open the patient list", () => {
+    expect(canViewPatients("admin")).toBe(true);
+    expect(canViewPatients("reception")).toBe(true);
+    expect(canViewPatients("practitioner")).toBe(true);
+  });
+
+  it("only admins and the treating practitioner can read intake answers", () => {
+    expect(canViewIntakeAnswers({ role: "admin", userId: 1 }, 9)).toBe(true);
+    expect(canViewIntakeAnswers({ role: "practitioner", userId: 9 }, 9)).toBe(true);
+    expect(canViewIntakeAnswers({ role: "practitioner", userId: 8 }, 9)).toBe(false);
+    expect(canViewIntakeAnswers({ role: "practitioner", userId: 8 }, null)).toBe(false);
+    expect(canViewIntakeAnswers({ role: "reception", userId: 9 }, 9)).toBe(false);
   });
 
   it("admins and reception see the reception dashboard", () => {
