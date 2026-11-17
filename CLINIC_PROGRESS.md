@@ -16,11 +16,13 @@ Updated each loop iteration. Plan: `C:\Users\timlo\.claude\plans\pure-zooming-mu
 - Item 4 DONE: /intake/[token] questionnaire (noindex, template-driven, single-use conditional submit, browser-verified, answers stored) (4d4070c); per-practitioner Cal.com webhook auto-registered on assignment (integration-tested)
 - Item 5 (part): /clinic/reception (admin + reception roles) - summary cards, day/week views, staff filter, intake status, no-show toggle; browser-verified with seeded bookings (5339e6b)
 - Item 5 DONE: /clinic/patients search + detail; intake answers visible only to admin or the treating practitioner (browser-verified as admin and as reception)
+- Item 6 (part): ClinicReminder (migration 20261117020000_clinic_reminders), scheduled/cancelled from webhooks, GET /api/clinic/cron/reminders with Bearer CRON_SECRET (curl-verified 401/401/200), claim-before-send idempotency, integration-tested against seeded bookings
 
 ## In progress
-- Item 6: ClinicReminder model + scheduling from webhook events + cron route
+- Item 6: security pass across all clinic routes
 
 ## Blocked / needs your decision
+- Deploy step: add `{ "path": "/api/clinic/cron/reminders", "schedule": "*/5 * * * *" }` to apps/web/vercel.json crons (upstream file) and set CRON_SECRET in Vercel.
 - Real email transport for intake/reminder emails (SMTP or provider). Currently CLINIC_EMAIL_TRANSPORT=log only writes the link to the server log.
 - Replace Cal.com logos/images in `apps/web/public` with clinic branding (needs your artwork)
 
