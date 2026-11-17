@@ -8,6 +8,8 @@ import { usePathname, useRouter } from "next/navigation";
 import type { ComponentProps } from "react";
 import React, { useEffect, useState, useMemo } from "react";
 
+import { isClinicMode } from "@calcom/clinic/src/config";
+import { applyClinicSettingsTabs } from "@calcom/clinic/src/navigation/applyClinicSettingsTabs";
 import { checkAdminOrOwner } from "@calcom/features/auth/lib/checkAdminOrOwner";
 import { useOrgBranding } from "@calcom/features/ee/organizations/context/provider";
 import type { OrganizationBranding } from "@calcom/features/ee/organizations/context/provider";
@@ -331,7 +333,7 @@ const getTabs = (orgBranding: OrganizationBranding | null) => {
     }
   }
 
-  return tabs;
+  return applyClinicSettingsTabs(tabs, isClinicMode());
 };
 
 // The following keys are assigned to admin only

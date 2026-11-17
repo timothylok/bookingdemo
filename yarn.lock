@@ -2214,6 +2214,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@calcom/clinic@workspace:*, @calcom/clinic@workspace:packages/clinic":
+  version: 0.0.0-use.local
+  resolution: "@calcom/clinic@workspace:packages/clinic"
+  languageName: unknown
+  linkType: soft
+
 "@calcom/closecom@workspace:packages/app-store/closecom":
   version: 0.0.0-use.local
   resolution: "@calcom/closecom@workspace:packages/app-store/closecom"
@@ -2658,6 +2664,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@calcom/i18n@workspace:packages/i18n"
   dependencies:
+    "@calcom/clinic": "workspace:*"
     "@calcom/tsconfig": "workspace:*"
     i18next: "npm:23.2.3"
     typescript: "npm:5.9.3"
@@ -3309,6 +3316,7 @@ __metadata:
     "@boxyhq/saml-jackson": "npm:1.52.2"
     "@calcom/app-store": "workspace:*"
     "@calcom/app-store-cli": "workspace:*"
+    "@calcom/clinic": "workspace:*"
     "@calcom/config": "workspace:*"
     "@calcom/dayjs": "workspace:*"
     "@calcom/embed-core": "workspace:*"

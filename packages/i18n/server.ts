@@ -1,9 +1,15 @@
 import { createInstance } from "i18next";
 import type { i18n as I18nInstance } from "i18next";
 
+import { isClinicMode } from "@calcom/clinic/src/config";
+import { withClinicTranslations } from "@calcom/clinic/src/i18n/clinicTranslations";
+
 const { i18n } = require("@calcom/i18n/next-i18next.config");
 
-const englishTranslations: Record<string, string> = require("@calcom/i18n/locales/en/common.json");
+const englishTranslations: Record<string, string> = withClinicTranslations(
+  require("@calcom/i18n/locales/en/common.json"),
+  isClinicMode()
+);
 
 const translationCache = new Map<string, Record<string, string>>();
 const i18nInstanceCache = new Map<string, I18nInstance>();

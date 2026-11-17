@@ -1,0 +1,13 @@
+{
+  "clinic_reception": "Reception",
+  "clinic_services": "Services",
+  "clinic_locations": "Locations",
+  "clinic_patients": "Patients",
+  "clinic_appointment_types": "Appointment types",
+  "clinic_practitioner": "Practitioner",
+  "clinic_practitioners": "Practitioners",
+  "clinic_patient": "Patient",
+  "clinic_patient_name": "Patient name",
+  "clinic_patient_email": "Patient email",
+  "clinic_patient_phone": "Patient phone"
+}

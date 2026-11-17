@@ -1,6 +1,8 @@
 import { useSession } from "next-auth/react";
 import { useMemo } from "react";
 
+import { isClinicMode } from "@calcom/clinic/src/config";
+import { applyClinicNavigation } from "@calcom/clinic/src/navigation/applyClinicNavigation";
 import { useIsEmbed } from "@calcom/embed-core/embed-iframe";
 import {
   useOrgBranding,
@@ -12,6 +14,7 @@ import classNames from "@calcom/ui/classNames";
 import { useHasPaidPlan } from "@calcom/web/modules/billing/hooks/useHasPaidPlan";
 
 import UnconfirmedBookingBadge from "../../bookings/components/UnconfirmedBookingBadge";
+import { clinicNavigationItems } from "../../clinic/clinicNavigationItems";
 import { KBarTrigger } from "../Kbar";
 import { TeamInviteBadge } from "../TeamInviteBadge";
 import type { NavigationItemType } from "./NavigationItem";
@@ -208,7 +211,11 @@ const useNavigationItems = (isPlatformNavigation = false) => {
   return useMemo(() => {
     const hasAllInsightsAccess = !isPending && !!hasPaidPlan;
     const items = !isPlatformNavigation
-      ? getNavigationItems(orgBranding, hasAllInsightsAccess)
+      ? applyClinicNavigation(
+          getNavigationItems(orgBranding, hasAllInsightsAccess),
+          clinicNavigationItems,
+          isClinicMode()
+        )
       : platformNavigationItems;
 
     const desktopNavigationItems = items.filter((item) => item.name !== MORE_SEPARATOR_NAME);

@@ -239,6 +239,7 @@ const nextConfig = (phase: string): NextConfig => {
     productionBrowserSourceMaps: true,
     transpilePackages: [
       "@calcom/app-store",
+      "@calcom/clinic",
       "@calcom/dayjs",
       "@calcom/emails",
       "@calcom/embed-core",

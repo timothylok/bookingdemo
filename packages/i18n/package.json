@@ -12,6 +12,7 @@
     "./locales/*": "./locales/*"
   },
   "dependencies": {
+    "@calcom/clinic": "workspace:*",
     "i18next": "23.2.3"
   },
   "devDependencies": {
