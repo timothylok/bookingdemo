@@ -1,44 +1,41 @@
-# Clinic build progress
+# Clinic build progress (FINAL)
 
-Updated each loop iteration. Plan: `C:\Users\timlo\.claude\plans\pure-zooming-muffin.md`.
+Plan: `C:\Users\timlo\.claude\plans\pure-zooming-muffin.md`. Last updated 17 Nov 2026, about 23:30 NZDT.
 
-## Done
-- Fork of Cal.com v6.2.0, `packages/clinic`, `NEXT_PUBLIC_CLINIC_MODE` nav/settings/label hooks (c83172f, 225915b)
-- Local Postgres 16 on D:, migrations + seed, Turbopack dev server working
-- Item 1: Kbar actions hidden, /teams /workflows /routing /insights redirect, rebrand env vars (local .env + `clinic.env.example`), Patient/Practitioner labels confirmed on public booking page
+## Status: MVP items 1-6 complete and verified
 
-- Item 2 (part): Clinic catalog Prisma models + migration `20261117000000_clinic_catalog`; `syncAssignment` (service -> EventType: create/update/hide/recreate) with unit tests and a DB integration test (`VITEST_MODE=integration yarn vitest run packages/clinic/src/services/prismaSyncDeps.integration-test.ts`)
+| # | Item | Verified by |
+|---|------|-------------|
+| 1 | CLINIC_MODE nav/settings/Kbar hiding, redirects, labels, rebrand env | browser + curl (307 redirects) |
+| 2 | Service + location catalog, admin CRUD, practitioner assignment -> EventType sync | browser + DB + integration tests |
+| 3 | Public /book flow, required patient phone (NZ +64 default) | browser, real booking |
+| 4 | Webhook -> patients, intake form (/intake/[token]), reminder scheduling | signed curl + real Cal.com webhooks |
+| 5 | /clinic/reception (day/week/staff, no-show), /clinic/patients (restricted answers) | browser, two roles |
+| 6 | 24h reminder cron (Bearer CRON_SECRET), security pass + route-guard regression test | curl, integration test |
 
-- Item 2 (part): /clinic/services admin page (list, create, edit, activate/deactivate) via server actions; clinic roles (`resolveClinicRole`: instance ADMIN -> clinic admin, else practitioner unless ClinicStaffRole row); browser-verified create + toggle (46fe92d)
-- Item 2 DONE: /clinic/locations admin (27c3af4); practitioner assignment UI on service edit page -> EventType created and bookable at /pro/initial-consultation-auckland-cbd-clinic (browser + DB verified); assignment integration tests
-- Item 3 DONE: public /book (no login) -> offer cards -> existing Booker; clinic EventTypes require visible patient phone (merged into bookingFields); browser-verified booking form shows Name*, Email*, Phone*
-- Item 4 (part): ClinicPatient/ClinicPatientBooking/ClinicFormTemplate/ClinicPatientForm models (migration 20261117010000_clinic_patients_forms, seeds default health questionnaire); POST /api/clinic/webhooks/cal verifies X-Cal-Signature-256, upserts patient + booking, creates one hashed-token intake form per booking (curl-verified: 401 bad sig, 200 create, idempotent redelivery) (22609cb)
-- Item 4 DONE: /intake/[token] questionnaire (noindex, template-driven, single-use conditional submit, browser-verified, answers stored) (4d4070c); per-practitioner Cal.com webhook auto-registered on assignment (integration-tested)
-- Item 5 (part): /clinic/reception (admin + reception roles) - summary cards, day/week views, staff filter, intake status, no-show toggle; browser-verified with seeded bookings (5339e6b)
-- Item 5 DONE: /clinic/patients search + detail; intake answers visible only to admin or the treating practitioner (browser-verified as admin and as reception)
-- Item 6 (part): ClinicReminder (migration 20261117020000_clinic_reminders), scheduled/cancelled from webhooks, GET /api/clinic/cron/reminders with Bearer CRON_SECRET (curl-verified 401/401/200), claim-before-send idempotency, integration-tested against seeded bookings
-- Item 6 DONE: security pass - clinic-mode 404 gates on all clinic routes, intake token redaction in production logs, 256 KB webhook body cap, routeGuards.test.ts regression guard over every clinic page/action/route
-- MVP items 1-6 COMPLETE
+## Verification results
+- Unit tests: 137 pass (`TZ=UTC yarn vitest run packages/clinic`). Integration tests (need the local DB): 11 pass (`VITEST_MODE=integration`).
+- Upstream tests for patched areas pass with clinic mode on AND off (i18n, shell, lib, emails: 488 tests each).
+- Type-check (`apps/web`, `NODE_OPTIONS=--max-old-space-size=12288 yarn tsc --noEmit`): **0 errors in clinic code and on every patched upstream line.** About 1,530 other errors exist in untouched upstream files (tRPC router type inference collapses in this environment). They are not from this work, but the full upstream baseline was not compared.
+- End-to-end (local; nothing leaves the machine: SMTP localhost:1025 not listening, no credentials, no integrations): a real booking via /book created the patient, intake form and reminder rows through Cal.com's own webhook. A real reschedule marked the old link RESCHEDULED, cancelled the old reminder, and moved the intake form to the new booking with a recalculated expiry.
 
-## In progress
-- Post-MVP hardening: follow-ups listed under Notes (NZ phone default, Booker branding), full type-check of touched upstream files
+## NOT verified / needs you before going live
+- **`next build` was never run** (CLAUDE.md says to ask first). A working dev server does not prove the production build passes. Run it before deploying.
+- **No real email transport.** Intake and reminder emails only go to the server log (`CLINIC_EMAIL_TRANSPORT=log`). Needs an SMTP/provider decision.
+- **Vercel Cron entry** for `/api/clinic/cron/reminders` must be added to `apps/web/vercel.json` (upstream file) and `CRON_SECRET` set in Vercel.
+- **Cal.com logos/images** in `apps/web/public` and the Booker footer logo are still Cal.com's (trademark; needs your artwork).
+- **Hosting region** for health data (NZ HIPC) is still undecided; `.env` here is local-only.
+- **AGPL:** the fork must stay AGPL if hosted for clinics; `/ee` is not enabled.
 
-## Blocked / needs your decision
-- Deploy step: add `{ "path": "/api/clinic/cron/reminders", "schedule": "*/5 * * * *" }` to apps/web/vercel.json crons (upstream file) and set CRON_SECRET in Vercel.
-- Real email transport for intake/reminder emails (SMTP or provider). Currently CLINIC_EMAIL_TRANSPORT=log only writes the link to the server log.
-- Replace Cal.com logos/images in `apps/web/public` with clinic branding (needs your artwork)
+## Deliberate deviations
+- Price is stored and shown on /book but not synced to the EventType: the Booker only shows a price via payment-app metadata, which starts a payment flow. Payments are out of scope.
+- Clinic code lives in `packages/clinic`, not `apps/web/modules/*`.
 
-## Next
-- Follow-ups below, then a final full verification (type-check, unit + integration tests, browser smoke test of every clinic page)
+## Known follow-ups (small)
+- Booker page still shows the Cal.com footer logo.
+- A practitioner with the username `book` would be shadowed by the static /book route.
+- `@types/react` 18.0.26 forced the `ActionForm` cast; remove it when the React types are upgraded.
+- Local dev data from testing: test patients, bookings 31/32 (e2e.patient@example.com), and `pro@example.com` has a ClinicStaffRole admin row.
 
-## Notes
-- Unverified: actual Cal.com -> clinic webhook delivery for a real booking (making a real booking would send emails). Route verified with signed curl requests; SSRF checks only apply to tRPC webhook create/edit, and self-hosted allows private IPs.
-- Existing local assignment (pro) predates auto-registration; re-assign or run ensurePractitionerWebhook to register its webhook.
-- Local dev data: test patient test.patient@example.com with fake bookingId 999001 (created by a signed curl webhook test).
-- Follow-up: Booker phone input defaults to US (+1); should default to NZ.
-- Follow-up: Booker footer still shows the Cal.com logo (branding).
-- /book is a static route, so a practitioner with username `book` would be shadowed.
-- Local dev: pro@example.com has a ClinicStaffRole admin row (dev data only) so it can open admin pages.
-- After `prisma generate`, restart the dev server or new Clinic models are undefined in the running app.
-- ClinicService.priceCents is stored but NOT synced to the EventType (payments are out of MVP scope).
-- Video locations map to Google Meet (`integrations:google:meet`), which needs a Google calendar connection per practitioner; phone = booker's number.
+## Not started (need provider decisions; "after the MVP" in the plan)
+SMS reminders, telehealth UI, patient notes, waitlist, payments, reporting.
