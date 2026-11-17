@@ -3338,3 +3338,75 @@ model RoutingTrace {
   assignmentReasonId Int?              @unique
   assignmentReason   AssignmentReason? @relation(fields: [assignmentReasonId], references: [id], onDelete: Cascade)
 }
+
+// ============================================================================
+// CLINIC FORK MODELS - append-only block. See CLINIC_PATCHES.md.
+// Rows refer to upstream tables (User, Booking, Attendee, EventType) by plain Int/String
+// columns with NO Prisma relation, so upstream models are never modified.
+// ============================================================================
+
+enum ClinicDeliveryType {
+  clinic
+  video
+  phone
+}
+
+enum ClinicRole {
+  admin
+  reception
+  practitioner
+}
+
+model ClinicLocation {
+  id        Int                @id @default(autoincrement())
+  name      String
+  address   String?
+  phone     String?
+  kind      ClinicDeliveryType @default(clinic)
+  active    Boolean            @default(true)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  assignments ClinicServiceAssignment[]
+}
+
+model ClinicService {
+  id           Int                @id @default(autoincrement())
+  name         String
+  durationMin  Int
+  priceCents   Int                @default(0)
+  currency     String             @default("NZD")
+  description  String?
+  color        String?
+  deliveryType ClinicDeliveryType @default(clinic)
+  active       Boolean            @default(true)
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  assignments ClinicServiceAssignment[]
+}
+
+model ClinicServiceAssignment {
+  id                 Int      @id @default(autoincrement())
+  serviceId          Int
+  practitionerUserId Int // User.id (no relation)
+  eventTypeId        Int? // EventType.id (no relation), set once synced
+  locationId         Int?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  service  ClinicService   @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  location ClinicLocation? @relation(fields: [locationId], references: [id], onDelete: SetNull)
+
+  @@unique([serviceId, practitionerUserId, locationId])
+  @@index([practitionerUserId])
+  @@index([eventTypeId])
+}
+
+model ClinicStaffRole {
+  id        Int        @id @default(autoincrement())
+  userId    Int        @unique // User.id (no relation)
+  role      ClinicRole
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
