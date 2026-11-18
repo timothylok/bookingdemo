@@ -1,6 +1,13 @@
 # Clinic build progress (FINAL)
 
-Plan: `C:\Users\timlo\.claude\plans\pure-zooming-muffin.md`. Last updated 17 Nov 2026, about 23:30 NZDT.
+Plan: `C:\Users\timlo\.claude\plans\pure-zooming-muffin.md`. Last updated 18 Nov 2026.
+
+## Handoff (18 Nov 2026)
+- Repo: https://github.com/timothylok/bookingdemo (`origin/main` = local `clinic/main`; full history). This handoff commit is local until pushed.
+- Added since the MVP: Resend email transport (opt-in), Cloudflare Worker reminder cron (`packages/clinic/cloudflare-cron/`), passing `next build`.
+- Next, in order, all need the user: (1) set Resend key/sender and send one test email; (2) choose Vercel plan (upstream `apps/web/vercel.json` needs Pro) and set env vars incl. build-time `NEXT_PUBLIC_CLINIC_MODE=1`; (3) run `prisma migrate deploy` on the real DB; (4) deploy the Worker with the same `CRON_SECRET`; (5) supply logos; (6) pick hosting region (NZ HIPC).
+- Vercel build recipe: root `apps/web`, run `yarn build` in `packages/trpc` first, then `next build` (not `yarn build`, which runs `sentry:release`).
+- The local dev server may still be running on port 3000.
 
 ## Status: MVP items 1-6 complete and verified
 
